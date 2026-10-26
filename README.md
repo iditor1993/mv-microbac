@@ -1,0 +1,128 @@
+# MV_microbac — analysis code
+
+Code for a two-database prediction-model study asking how much each layer of prior microbiological history adds — beyond prior antibiotic exposure — to the prediction of cefepime resistance in mechanically ventilated patients with Gram-negative lower respiratory tract infection.
+
+**Study in one paragraph.** Two retrospective cohorts (ARMD-MGB; MIMIC-IV v3.1) of adults receiving invasive ventilation with a lower respiratory culture growing a Gram-negative organism and tested for cefepime. Seven nested logistic models add demographics and organism group (M0), prior antibiotic exposure (M1), prior culture burden (M2), prior isolation of the same organism (M2b), prior cefepime susceptibility of that organism (M3), and history of other organisms (M4–M5). Discrimination is estimated by patient-grouped cross-validation (ARMD-MGB) and temporal validation (MIMIC-IV), with patient-clustered bootstrap, calibration, decision curves, and a two-drug cascade simulation.
+
+---
+
+## Scope of this repository
+
+This repository contains **only the code and scripts used for data extraction, statistical analysis and figure generation**. It deliberately does **not** contain:
+
+- the manuscript, submission package or any Word/PDF files;
+- result figures or result tables (these are produced locally by the scripts below);
+- any patient-level data;
+- the source databases (available only under PhysioNet data use agreements).
+
+The full study documentation (protocol, feasibility checks, decision log, results notes) is kept outside version control.
+
+---
+
+## Data sources
+
+| Database | Content | Access |
+|---|---|---|
+| ARMD-MGB | De-identified Mass General Brigham microbiology, prescribing, procedure and demographic data, linked at the culture-order level | PhysioNet credentialed access (data use agreement); cannot be redistributed |
+| MIMIC-IV v3.1 | Beth Israel Deaconess Medical Center EHR, 2008–2022 (microbiology, ICU stays, ventilation, prescribing) | PhysioNet credentialed access |
+
+Scripts open both databases **read-only** and never copy, export or log individual-level records. Paths default to the authors' local layout and can be overridden:
+
+```powershell
+$env:ARMD_DB  = "D:\data\ARMD_MGB.duckdb"
+$env:MIMIC_DB = "D:\data\mimiciv_v3_1.duckdb"
+```
+
+---
+
+## Environment
+
+Python 3.12 with the packages in `requirements.txt` (duckdb, pandas, numpy, scipy, scikit-learn, matplotlib, xgboost).
+
+```powershell
+pip install -r requirements.txt
+```
+
+Run all scripts from the `src` directory:
+
+```powershell
+cd src
+python s01_incremental_value.py
+```
+
+---
+
+## Pipeline
+
+### Core
+
+| Script | Purpose |
+|---|---|
+| `common.py` | Read-only database connections; metrics (AUROC, AUPRC, Brier), calibration, NRI/IDI, decision curves; patient-clustered bootstrap |
+| `features.py` | Cohort construction and feature engineering for both databases (identical definitions) |
+| `analysis.py` | Nested models M0–M5, increments, stratification, thresholds, calibration |
+| `s01_incremental_value.py` | **Primary analysis**: nested models, ΔAUROC, NRI/IDI, decision curves, calibration |
+| `sens_common.py` | Shared helpers for the sensitivity analyses |
+
+### Pre-specified sensitivity analyses
+
+| Script | Analysis |
+|---|---|
+| `s02_site_decomposition.py` | Same-organism resistance from respiratory vs non-respiratory sites |
+| `s04_mv_window.py` | Alternative ventilation definitions (ventilator procedure 1–2/7/14/30 days; IMV ±12/±24 h) |
+| `s05_phenotype_emulation.py` | Emulation of the ARMD-MGB ventilation proxy in MIMIC-IV |
+| `s06_xgb_replication.py` | Gradient-boosted trees instead of logistic regression |
+| `s07_repeated_cv.py` | Repeated cross-validation (five random seeds) |
+| `s08_exclusions.py` | Excluding recent cefepime exposure and polymicrobial cultures |
+| `s09_mimic_severity.py` | Adjustment for SOFA, vasopressors, lactate and Charlson index (MIMIC-IV) |
+| `s10_recalibration.py` | Recalibration in the large and year-by-year discrimination |
+| `s11_cross_database.py` | Cross-database transport without refitting |
+| `s12_recalibrated_thresholds.py` | Threshold performance after recalibration |
+| `s13_coefficients.py` | Full coefficients of the primary model |
+| `s14_cascade.py` | Two-drug cascade simulation (cefepime → meropenem) |
+| `s15_cascade_paired.py` | Paired comparisons between cascade strategies |
+
+### Figures and feasibility
+
+| Script | Purpose |
+|---|---|
+| `make_figures.py` | Figure 1 (ROC), Figure S1 (AUROC forest), Figure 2 (calibration), Figure 3 (decision curves), Figure 4 (increments), Figure 5 (cascade trade-off), learner comparison |
+| `docs/feasibility_queries/feasibility_probe.py` | Read-only probe reproducing the cohort-size and prior-history counts quoted in the protocol |
+
+### Recommended order
+
+```text
+s01  ->  s02  ->  s04  ->  s05  ->  s06  ->  s07
+     ->  s08  ->  s09  ->  s10  ->  s11  ->  s12  ->  s13  ->  s14  ->  s15
+     ->  make_figures.py
+```
+
+Each script is independent apart from the shared modules; all write aggregate tables to `results/tables` and figures to `results/figures` (created on demand, not committed).
+
+---
+
+## Outputs
+
+- `results/tables/*.csv` — aggregate estimates only (no identifiers, no individual-level rows).
+- `results/figures/*.png` — 300 dpi figures.
+
+Both directories are git-ignored: they are generated artefacts, and they can be recreated from the code and the source databases.
+
+---
+
+## Reproducibility notes
+
+- Random seeds are fixed (`20261024`) for cross-validation splits, bootstrap resampling and XGBoost.
+- Bootstrap confidence intervals are clustered by patient throughout.
+- No variable selection and no hyperparameter tuning are applied to the primary models.
+- Missing exposure values use fixed sentinels, so variable definitions are identical across databases.
+
+---
+
+## Citation
+
+If you use this code, please cite the accompanying manuscript (details to be added on publication).
+
+## Contact
+
+Xuming Pan, Department of Emergency, The Second Affiliated Hospital of Zhejiang Chinese Medical University — 20194112@zcmu.edu.cn
