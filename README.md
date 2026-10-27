@@ -1,5 +1,7 @@
 # MV_microbac
 
+Repository: https://github.com/iditor1993/mv-microbac
+
 Analysis code for a two-database prediction-model study asking how much each layer of prior microbiological history adds — beyond prior antibiotic exposure — to the prediction of cefepime resistance in mechanically ventilated patients with Gram-negative lower respiratory tract infection.
 
 **Study in brief.** Two retrospective cohorts (ARMD-MGB; MIMIC-IV v3.1) of adults receiving invasive ventilation with a lower respiratory culture growing a Gram-negative organism and tested for cefepime. Seven nested logistic models add demographics and organism group (M0), prior antibiotic exposure (M1), prior culture burden (M2), prior isolation of the same organism (M2b), prior cefepime susceptibility of that organism (M3), and history of other organisms (M4–M5). Discrimination is estimated by patient-grouped cross-validation (ARMD-MGB) and temporal validation (MIMIC-IV), with patient-clustered bootstrap, calibration, decision curves and a two-drug cascade simulation.
