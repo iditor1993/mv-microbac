@@ -1,24 +1,25 @@
-# Ignore everything by default; whitelist only the analysis code.
+# Ignore everything by default, then whitelist only the analysis code.
 *
 
 !.gitignore
+!.gitattributes
 !README.md
+!LICENSE
+!CITATION.cff
 !requirements.txt
-
+!run_all.py
 !src/
 !src/*.py
 
-!docs/
-!docs/feasibility_queries/
-!docs/feasibility_queries/*.py
-
-# Never track caches, outputs, data or documents
+# Never track caches, data, outputs or documents
 __pycache__/
 *.pyc
 *.pyo
+data/
 results/
 reference/
 Journal_of_Antimicrobial_Chemotherapy/
+docs/
 *.docx
 *.pdf
 *.duckdb

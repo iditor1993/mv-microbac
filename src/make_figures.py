@@ -218,7 +218,7 @@ def fig4_increments():
     plt.close(fig)
 
 
-def fig5_learner():
+def figS2_learner():
     lr = load("c01_increments.csv")
     xg = load("c06_xgb_increments.csv")
     order = list(dict.fromkeys(lr.increment))
@@ -243,7 +243,7 @@ def fig5_learner():
         ax.set_axisbelow(True)
     axes[0].legend(frameon=False, fontsize=8.5, loc="upper right")
     fig.tight_layout()
-    fig.savefig(FIGURES / "fig5_learner_comparison.png", dpi=300, bbox_inches="tight")
+    fig.savefig(FIGURES / "figS2_learner_comparison.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -289,6 +289,6 @@ def fig5_cascade():
 if __name__ == "__main__":
     ensure_dirs()
     for f in (fig1_roc, figS1_nested_ci, fig2_calibration, fig3_dca,
-              fig4_increments, fig5_learner, fig5_cascade):
+              fig4_increments, fig5_cascade, figS2_learner):
         f()
         print("ok", f.__name__)

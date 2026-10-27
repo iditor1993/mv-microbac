@@ -31,10 +31,11 @@ DOCS = PROJECT / "docs"
 
 import os
 
-# Database locations. Override with the ARMD_DB / MIMIC_DB environment variables
-# when the databases are mounted elsewhere; defaults match the authors' setup.
-ARMD_DB = Path(os.environ.get("ARMD_DB", r"E:\clinical_research\ARMD_MGB_duckdb\ARMD_MGB.duckdb"))
-MIMIC_DB = Path(os.environ.get("MIMIC_DB", r"E:\clinical_research\MIMIC-IV_3.1\mimiciv_v3_1.duckdb"))
+# Database locations. Put the DuckDB files in <project>/data/, or point the
+# environment variables at them (ARMD_DB, MIMIC_DB, or MV_DATA_DIR for both).
+DATA_DIR = Path(os.environ.get("MV_DATA_DIR", str(PROJECT / "data")))
+ARMD_DB = Path(os.environ.get("ARMD_DB", str(Path(DATA_DIR) / "ARMD_MGB.duckdb")))
+MIMIC_DB = Path(os.environ.get("MIMIC_DB", str(Path(DATA_DIR) / "mimiciv_v3_1.duckdb")))
 
 SEED = 20261024
 
@@ -42,7 +43,10 @@ SEED = 20261024
 def connect(path: Path, threads: int = 8) -> duckdb.DuckDBPyConnection:
     if not path.exists():
         raise FileNotFoundError(
-            f"数据库不存在: {path}\n本项目只读访问数据库，不会复制数据；请确认数据盘已挂载。"
+            f"Database not found: {path}\n"
+            "The scripts open both DuckDB files read-only and never copy them.\n"
+            "Place the files in <project>/data/, or set ARMD_DB / MIMIC_DB "
+            "(or MV_DATA_DIR) to their location."
         )
     con = duckdb.connect(str(path), read_only=True)
     con.execute(f"SET threads={threads}")

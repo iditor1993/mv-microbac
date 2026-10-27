@@ -3,7 +3,7 @@
 import os, sys, numpy as np, pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
-sys.path.insert(0, r"E:\clinical_research\Clinical_database_paper\MV_microbac\src")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from analysis import MODELS
 from common import ARMD_DB, MIMIC_DB, TABLES, connect
 from features import build_armd, build_mimic, prepare
@@ -40,6 +40,6 @@ L = ["**Table S4.** Coefficients of the primary model (M3) in each database\n",
 for v, r in piv.iterrows():
     L.append(f"| {v} | {r['ARMD-MGB']:.2f} | {r['MIMIC-IV']:.2f} |")
 L += ["", "OR, odds ratio; SD, standard deviation. ARMD-MGB coefficients are from a model fitted to all cultures (performance was estimated separately by cross-validation); MIMIC-IV coefficients are from the model fitted to 2008-2014 data only, which was the model used for temporal validation. Predictors were standardised before fitting; the table therefore gives the change in odds per one standard deviation increase."]
-out = os.path.join(r"E:\clinical_research\Clinical_database_paper\MV_microbac\Journal_of_Antimicrobial_Chemotherapy\07_supplementary", "tableS4_coefficients.md")
+out = os.path.join(TABLES, "c13_coefficients.md")
 open(out, "w", encoding="utf-8").write("\n".join(L))
 print("\n".join(L))

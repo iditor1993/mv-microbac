@@ -1,14 +1,20 @@
 
-"""Feasibility probe for MV_microbac (read-only).
+"""Feasibility probe (read-only).
 
-Reproduces the headline counts quoted in docs/feasibility_2026-10-24.md.
+Reproduces the cohort-size and prior-history counts quoted in the protocol:
+how many respiratory cultures are available, how many grow a Gram-negative
+organism tested for cefepime, how many occurred during ventilation, and how
+often prior same-organism susceptibility is available.
 
     python feasibility_probe.py
 
-Reads both DuckDB databases read-only; prints a text report; writes nothing.
+Reads both DuckDB databases read-only, prints a text report and writes nothing.
+Database paths follow common.py: <project>/data/ by default, or set ARMD_DB /
+MIMIC_DB (or MV_DATA_DIR).
 """
 from __future__ import annotations
 
+import os
 import sys
 
 import duckdb
@@ -21,8 +27,11 @@ except Exception:
 
 pd.set_option("display.width", 200)
 
-ARMD_DB = r"E:\clinical_research\ARMD_MGB_duckdb\ARMD_MGB.duckdb"
-MIMIC_DB = r"E:\clinical_research\MIMIC-IV_3.1\mimiciv_v3_1.duckdb"
+from pathlib import Path
+
+_DATA_DIR = Path(os.environ.get("MV_DATA_DIR", str(Path(__file__).resolve().parents[1] / "data")))
+ARMD_DB = os.environ.get("ARMD_DB", str(_DATA_DIR / "ARMD_MGB.duckdb"))
+MIMIC_DB = os.environ.get("MIMIC_DB", str(_DATA_DIR / "mimiciv_v3_1.duckdb"))
 
 GN = ("PSEUDOMONAS|KLEBSIELLA|ESCHERICHIA|ENTEROBACTER|SERRATIA|PROTEUS"
       "|CITROBACTER|ACINETOBACTER|STENOTROPHOMONAS")

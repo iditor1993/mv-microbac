@@ -9,7 +9,7 @@ import json, sys, numpy as np, pandas as pd
 from scipy.optimize import brentq
 from sklearn.metrics import roc_auc_score
 
-sys.path.insert(0, r"E:\clinical_research\Clinical_database_paper\MV_microbac\src")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from analysis import MODELS, run_models
 from common import MIMIC_DB, TABLES, connect
 from features import build_mimic, prepare

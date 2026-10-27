@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying manuscript."
+title: "MV_microbac: analysis code for a two-database study of prior susceptibility and cefepime resistance in ventilated patients"
+type: software
+authors:
+  - family-names: Ye
+    given-names: Bochun
+  - family-names: Chen
+    given-names: Danlei
+  - family-names: Pan
+    given-names: Xuming
+    orcid: "https://orcid.org/0000-0002-2491-7396"
+    email: 20194112@zcmu.edu.cn
+version: 1.0.0
+date-released: "2026-10-27"
+license: MIT
+repository-code: "https://github.com/<your-account>/MV_microbac"
